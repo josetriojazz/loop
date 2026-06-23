@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOOP — Guitar Looper</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0e0f;
+    --surface: #161618;
+    --surface2: #1e1e21;
+    --border: #2a2a2e;
+    --accent: #e8ff47;
+    --accent-dim: rgba(232,255,71,0.12);
+    --accent-glow: rgba(232,255,71,0.35);
+    --red: #ff4d4d;
+    --red-dim: rgba(255,77,77,0.15);
+    --text: #f0f0f0;
+    --muted: #666;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Inter', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    gap: 24px;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+  }
+  .wordmark {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  h1 {
+    font-family: var(--mono);
+    font-size: clamp(38px, 8vw, 72px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--accent);
+    line-height: 1;
+    text-shadow: 0 0 40px var(--accent-glow);
+  }
+
+  /* Main layout */
+  .app {
+    width: 100%;
+    max-width: 620px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .card-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+  }
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .dot.recording { background: var(--red); box-shadow: 0 0 8px var(--red); animation: pulse 1s infinite; }
+  .dot.playing { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .duration-display {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  #duration-val { color: var(--text); }
+
+  /* Waveform */
+  #waveform {
+    width: 100%;
+    height: 80px;
+    background: var(--surface2);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    display: block;
+  }
+
+  /* Playhead */
+  .playhead-container {
+    position: relative;
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+  #playhead {
+    position: absolute;
+    left: 0; top: 0;
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: none;
+    box-shadow: 0 0 6px var(--accent-glow);
+  }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .btn {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .btn-record {
+    background: var(--red-dim);
+    color: var(--red);
+    border: 1px solid var(--red);
+    padding: 14px 24px;
+    flex: 1;
+    justify-content: center;
+    font-size: 13px;
+  }
+  .btn-record:hover:not(:disabled) { background: rgba(255,77,77,0.25); }
+  .btn-record.active {
+    background: var(--red);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(255,77,77,0.4);
+  }
+
+  .btn-play {
+    background: var(--accent-dim);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 14px 24px;
+    flex: 1;
+    justify-content: center;
+    font-size: 13px;
+  }
+  .btn-play:hover:not(:disabled) { background: rgba(232,255,71,0.2); }
+  .btn-play.active {
+    background: var(--accent);
+    color: #0e0e0f;
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  .btn-clear {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+  }
+  .btn-clear:hover:not(:disabled) { color: var(--text); border-color: var(--text); }
+
+  /* Volume */
+  .volume-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .vol-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    min-width: 38px;
+  }
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--accent-glow);
+    transition: transform 0.1s;
+  }
+  input[type=range]::-webkit-slider-thumb:active { transform: scale(1.3); }
+  .vol-value {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    min-width: 32px;
+    text-align: right;
+  }
+
+  /* Metronome */
+  .metro-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .metro-toggle {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .metro-toggle:hover { color: var(--text); border-color: var(--text); }
+  .metro-toggle.on {
+    background: var(--accent-dim);
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .bpm-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+  .bpm-btn {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.1s;
+    font-family: var(--mono);
+  }
+  .bpm-btn:hover { border-color: var(--accent); color: var(--accent); }
+  #bpm-display {
+    font-family: var(--mono);
+    font-size: 13px;
+    min-width: 64px;
+    text-align: center;
+  }
+  #bpm-val { color: var(--accent); }
+  .beat-lights {
+    display: flex;
+    gap: 5px;
+  }
+  .beat-light {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.05s, box-shadow 0.05s;
+  }
+  .beat-light.active { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+  .beat-light.beat1.active { background: #fff; box-shadow: 0 0 8px rgba(255,255,255,0.5); }
+
+  /* Keyboard hint */
+  .hint {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+  }
+  kbd {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text);
+  }
+
+  /* Mic error */
+  #mic-error {
+    display: none;
+    background: var(--red-dim);
+    border: 1px solid var(--red);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--red);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wordmark">Guitar Looper</div>
+  <h1>LOOP</h1>
+</header>
+
+<div class="app">
+
+  <div id="mic-error">
+    🎙 No se pudo acceder al micrófono. Verifica los permisos del navegador.
+  </div>
+
+  <!-- Status -->
+  <div class="status-bar">
+    <div class="status-indicator">
+      <div class="dot" id="status-dot"></div>
+      <span id="status-text" style="font-family:var(--mono);font-size:12px;letter-spacing:0.1em;">LISTO</span>
+    </div>
+    <div class="duration-display">
+      <span id="duration-val">0.0</span>s
+    </div>
+  </div>
+
+  <!-- Waveform -->
+  <div class="card">
+    <div class="card-label">Waveform</div>
+    <canvas id="waveform"></canvas>
+    <div class="playhead-container">
+      <div id="playhead"></div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="card">
+    <div class="card-label">Controles  ·  <kbd>SPACE</kbd> grabar  ·  <kbd>P</kbd> play/stop</div>
+    <div class="controls">
+      <button class="btn btn-record" id="btn-record">
+        <span id="rec-icon">⏺</span>
+        <span id="rec-label">GRABAR</span>
+      </button>
+      <button class="btn btn-play" id="btn-play" disabled>
+        <span id="play-icon">▶</span>
+        <span id="play-label">PLAY</span>
+      </button>
+      <button class="btn btn-clear" id="btn-clear" disabled title="Borrar loop">✕</button>
+    </div>
+  </div>
+
+  <!-- Volume -->
+  <div class="card">
+    <div class="card-label">Volumen del loop</div>
+    <div class="volume-row">
+      <span class="vol-label">VOL</span>
+      <input type="range" id="volume" min="0" max="100" value="80">
+      <span class="vol-value" id="vol-display">80%</span>
+    </div>
+  </div>
+
+  <!-- Metronome -->
+  <div class="card">
+    <div class="card-label">Metrónomo</div>
+    <div class="metro-row">
+      <button class="metro-toggle" id="metro-toggle">METRO OFF</button>
+      <div class="bpm-control">
+        <button class="bpm-btn" id="bpm-down">−</button>
+        <span id="bpm-display"><span id="bpm-val">120</span> BPM</span>
+        <button class="bpm-btn" id="bpm-up">+</button>
+      </div>
+      <div class="beat-lights" id="beat-lights">
+        <div class="beat-light beat1"></div>
+        <div class="beat-light"></div>
+        <div class="beat-light"></div>
+        <div class="beat-light"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+let audioCtx = null;
+let mediaStream = null;
+let mediaRecorder = null;
+let recordedChunks = [];
+let loopBuffer = null;
+let sourceNode = null;
+let gainNode = null;
+let isRecording = false;
+let isPlaying = false;
+let loopStartTime = 0;
+let loopDuration = 0;
+let playheadRAF = null;
+let waveformData = [];
+let analyser = null;
+let waveformRAF = null;
+
+// Metronome
+let metroOn = false;
+let bpm = 120;
+let metroInterval = null;
+let beatIndex = 0;
+
+// ─── DOM refs ─────────────────────────────────────────────────────────────────
+const btnRecord = document.getElementById('btn-record');
+const btnPlay   = document.getElementById('btn-play');
+const btnClear  = document.getElementById('btn-clear');
+const recLabel  = document.getElementById('rec-label');
+const recIcon   = document.getElementById('rec-icon');
+const playLabel = document.getElementById('play-label');
+const playIcon  = document.getElementById('play-icon');
+const statusDot = document.getElementById('status-dot');
+const statusText= document.getElementById('status-text');
+const durationVal=document.getElementById('duration-val');
+const volumeSlider=document.getElementById('volume');
+const volDisplay=document.getElementById('vol-display');
+const playhead  = document.getElementById('playhead');
+const canvas    = document.getElementById('waveform');
+const ctx2d     = canvas.getContext('2d');
+const metroToggle=document.getElementById('metro-toggle');
+const bpmVal    = document.getElementById('bpm-val');
+const bpmDown   = document.getElementById('bpm-down');
+const bpmUp     = document.getElementById('bpm-up');
+const beatLights= document.querySelectorAll('.beat-light');
+const micError  = document.getElementById('mic-error');
+
+// ─── Resize canvas ────────────────────────────────────────────────────────────
+function resizeCanvas() {
+  canvas.width  = canvas.offsetWidth * window.devicePixelRatio;
+  canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+  ctx2d.scale(window.devicePixelRatio, window.devicePixelRatio);
+  drawWaveform();
+}
+window.addEventListener('resize', resizeCanvas);
+setTimeout(resizeCanvas, 50);
+
+// ─── Init Audio Context ───────────────────────────────────────────────────────
+async function initAudio() {
+  if (audioCtx) return true;
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    gainNode = audioCtx.createGain();
+    gainNode.gain.value = volumeSlider.value / 100;
+    gainNode.connect(audioCtx.destination);
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
+
+// ─── Recording ────────────────────────────────────────────────────────────────
+async function startRecording() {
+  if (!(await initAudio())) return;
+  try {
+    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+  } catch(e) {
+    micError.style.display = 'block';
+    return;
+  }
+  micError.style.display = 'none';
+
+  // Live waveform analyser
+  const source = audioCtx.createMediaStreamSource(mediaStream);
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 256;
+  source.connect(analyser);
+  startLiveWaveform();
+
+  recordedChunks = [];
+  mediaRecorder = new MediaRecorder(mediaStream);
+  mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+  mediaRecorder.onstop = onRecordingStop;
+  mediaRecorder.start();
+
+  isRecording = true;
+  setStatus('recording');
+}
+
+async function stopRecording() {
+  if (!mediaRecorder) return;
+  mediaRecorder.stop();
+  mediaStream.getTracks().forEach(t => t.stop());
+  stopLiveWaveform();
+  isRecording = false;
+}
+
+async function onRecordingStop() {
+  const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+  const arrayBuf = await blob.arrayBuffer();
+  try {
+    loopBuffer = await audioCtx.decodeAudioData(arrayBuf);
+  } catch(e) {
+    setStatus('idle');
+    return;
+  }
+  loopDuration = loopBuffer.duration;
+  durationVal.textContent = loopDuration.toFixed(1);
+  buildWaveformData();
+  drawWaveform();
+  setStatus('idle');
+  btnPlay.disabled = false;
+  btnClear.disabled = false;
+}
+
+// ─── Playback ─────────────────────────────────────────────────────────────────
+function startPlayback() {
+  if (!loopBuffer) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  sourceNode = audioCtx.createBufferSource();
+  sourceNode.buffer = loopBuffer;
+  sourceNode.loop = true;
+  sourceNode.connect(gainNode);
+  sourceNode.start(0);
+  loopStartTime = audioCtx.currentTime;
+  isPlaying = true;
+  setStatus('playing');
+  startPlayhead();
+}
+
+function stopPlayback() {
+  if (sourceNode) { try { sourceNode.stop(); } catch(e){} sourceNode = null; }
+  isPlaying = false;
+  cancelAnimationFrame(playheadRAF);
+  playhead.style.width = '0%';
+  setStatus('idle');
+}
+
+// ─── Playhead animation ───────────────────────────────────────────────────────
+function startPlayhead() {
+  cancelAnimationFrame(playheadRAF);
+  function tick() {
+    if (!isPlaying || !loopDuration) return;
+    const elapsed = (audioCtx.currentTime - loopStartTime) % loopDuration;
+    playhead.style.width = ((elapsed / loopDuration) * 100) + '%';
+    playheadRAF = requestAnimationFrame(tick);
+  }
+  tick();
+}
+
+// ─── Waveform ─────────────────────────────────────────────────────────────────
+function buildWaveformData() {
+  if (!loopBuffer) return;
+  const raw = loopBuffer.getChannelData(0);
+  const samples = 200;
+  const step = Math.floor(raw.length / samples);
+  waveformData = [];
+  for (let i = 0; i < samples; i++) {
+    let max = 0;
+    for (let j = 0; j < step; j++) {
+      const v = Math.abs(raw[i * step + j] || 0);
+      if (v > max) max = v;
+    }
+    waveformData.push(max);
+  }
+}
+
+function drawWaveform() {
+  const W = canvas.offsetWidth;
+  const H = canvas.offsetHeight;
+  ctx2d.clearRect(0, 0, W, H);
+
+  if (!waveformData.length) {
+    // Empty state grid
+    ctx2d.strokeStyle = '#2a2a2e';
+    ctx2d.lineWidth = 1;
+    ctx2d.beginPath();
+    ctx2d.moveTo(0, H/2); ctx2d.lineTo(W, H/2);
+    ctx2d.stroke();
+    return;
+  }
+
+  const barW = W / waveformData.length;
+  const accent = '#e8ff47';
+  const accentDim = 'rgba(232,255,71,0.25)';
+
+  waveformData.forEach((v, i) => {
+    const barH = Math.max(2, v * H * 0.85);
+    const x = i * barW;
+    const y = (H - barH) / 2;
+    const grad = ctx2d.createLinearGradient(x, y, x, y + barH);
+    grad.addColorStop(0, accent);
+    grad.addColorStop(0.5, accentDim);
+    grad.addColorStop(1, accent);
+    ctx2d.fillStyle = grad;
+    ctx2d.fillRect(x + barW * 0.15, y, barW * 0.7, barH);
+  });
+}
+
+// ─── Live waveform during recording ──────────────────────────────────────────
+function startLiveWaveform() {
+  const dataArray = new Uint8Array(analyser.frequencyBinCount);
+  function tick() {
+    if (!isRecording) return;
+    analyser.getByteTimeDomainData(dataArray);
+    const W = canvas.offsetWidth;
+    const H = canvas.offsetHeight;
+    ctx2d.clearRect(0, 0, W, H);
+    ctx2d.strokeStyle = '#ff4d4d';
+    ctx2d.lineWidth = 1.5;
+    ctx2d.beginPath();
+    const sliceW = W / dataArray.length;
+    dataArray.forEach((v, i) => {
+      const y = (v / 128.0) * (H / 2);
+      if (i === 0) ctx2d.moveTo(0, y);
+      else ctx2d.lineTo(i * sliceW, y);
+    });
+    ctx2d.stroke();
+    waveformRAF = requestAnimationFrame(tick);
+  }
+  tick();
+}
+
+function stopLiveWaveform() {
+  cancelAnimationFrame(waveformRAF);
+}
+
+// ─── Clear loop ───────────────────────────────────────────────────────────────
+function clearLoop() {
+  stopPlayback();
+  loopBuffer = null;
+  loopDuration = 0;
+  waveformData = [];
+  durationVal.textContent = '0.0';
+  btnPlay.disabled = true;
+  btnClear.disabled = true;
+  drawWaveform();
+  setStatus('idle');
+}
+
+// ─── Volume ───────────────────────────────────────────────────────────────────
+volumeSlider.addEventListener('input', () => {
+  const v = volumeSlider.value;
+  volDisplay.textContent = v + '%';
+  if (gainNode) gainNode.gain.value = v / 100;
+});
+
+// ─── Status ───────────────────────────────────────────────────────────────────
+function setStatus(state) {
+  statusDot.className = 'dot';
+  if (state === 'recording') {
+    statusDot.classList.add('recording');
+    statusText.textContent = 'GRABANDO';
+    recLabel.textContent = 'DETENER';
+    recIcon.textContent = '⏹';
+    btnRecord.classList.add('active');
+    btnPlay.disabled = true;
+    btnClear.disabled = true;
+  } else if (state === 'playing') {
+    statusDot.classList.add('playing');
+    statusText.textContent = 'REPRODUCIENDO';
+    playLabel.textContent = 'STOP';
+    playIcon.textContent = '⏹';
+    btnPlay.classList.add('active');
+  } else {
+    statusText.textContent = loopBuffer ? 'LISTO' : 'SIN LOOP';
+    recLabel.textContent = 'GRABAR';
+    recIcon.textContent = '⏺';
+    btnRecord.classList.remove('active');
+    playLabel.textContent = 'PLAY';
+    playIcon.textContent = '▶';
+    btnPlay.classList.remove('active');
+  }
+}
+
+// ─── Button handlers ─────────────────────────────────────────────────────────
+btnRecord.addEventListener('click', async () => {
+  if (isRecording) {
+    await stopRecording();
+  } else {
+    if (isPlaying) stopPlayback();
+    await startRecording();
+  }
+});
+
+btnPlay.addEventListener('click', () => {
+  if (isPlaying) stopPlayback();
+  else startPlayback();
+});
+
+btnClear.addEventListener('click', () => {
+  if (confirm('¿Borrar el loop actual?')) clearLoop();
+});
+
+// ─── Keyboard shortcuts ───────────────────────────────────────────────────────
+document.addEventListener('keydown', async (e) => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.code === 'Space') {
+    e.preventDefault();
+    if (isRecording) await stopRecording();
+    else { if (isPlaying) stopPlayback(); await startRecording(); }
+  }
+  if (e.code === 'KeyP') {
+    e.preventDefault();
+    if (!loopBuffer) return;
+    if (isPlaying) stopPlayback();
+    else startPlayback();
+  }
+});
+
+// ─── Metronome ────────────────────────────────────────────────────────────────
+function startMetronome() {
+  if (metroInterval) clearInterval(metroInterval);
+  beatIndex = 0;
+  const interval = (60 / bpm) * 1000;
+  tick();
+  metroInterval = setInterval(tick, interval);
+  function tick() {
+    if (!audioCtx) initAudio();
+    if (audioCtx) playClick(beatIndex === 0);
+    beatLights.forEach((l,i) => l.classList.toggle('active', i === beatIndex));
+    beatIndex = (beatIndex + 1) % 4;
+  }
+}
+
+function stopMetronome() {
+  clearInterval(metroInterval);
+  metroInterval = null;
+  beatLights.forEach(l => l.classList.remove('active'));
+}
+
+function playClick(accent) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const env = audioCtx.createGain();
+  osc.connect(env); env.connect(audioCtx.destination);
+  osc.frequency.value = accent ? 1200 : 800;
+  env.gain.setValueAtTime(accent ? 0.4 : 0.25, audioCtx.currentTime);
+  env.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+  osc.start(audioCtx.currentTime);
+  osc.stop(audioCtx.currentTime + 0.04);
+}
+
+metroToggle.addEventListener('click', async () => {
+  await initAudio();
+  if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+  metroOn = !metroOn;
+  if (metroOn) {
+    startMetronome();
+    metroToggle.textContent = 'METRO ON';
+    metroToggle.classList.add('on');
+  } else {
+    stopMetronome();
+    metroToggle.textContent = 'METRO OFF';
+    metroToggle.classList.remove('on');
+  }
+});
+
+function updateBpm() {
+  bpmVal.textContent = bpm;
+  if (metroOn) startMetronome();
+}
+bpmDown.addEventListener('click', () => { if (bpm > 40) { bpm -= 5; updateBpm(); } });
+bpmUp.addEventListener('click', () => { if (bpm < 240) { bpm += 5; updateBpm(); } });
+
+// Init
+setStatus('idle');
+</script>
+</body>
+</html>
