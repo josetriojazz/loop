@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101010">
-<title>AYÜN DÚO | Loop Station</title>
+<title>AYUN DUO | Loop Station</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; }
 
@@ -14,8 +14,7 @@
     --panel: #181715;
     --panel-2: #211f1c;
     --panel-3: #2a2723;
-    --line: rgba(255, 255, 255, 0.1);
-    --line-strong: rgba(255, 255, 255, 0.2);
+    --line: rgba(255,255,255,.11);
     --text: #f5f1e8;
     --muted: #aaa39a;
     --soft: #746e65;
@@ -23,9 +22,8 @@
     --amber-2: #ffd08a;
     --green: #8fd29c;
     --red: #ff6b5f;
-    --red-soft: rgba(255, 107, 95, 0.14);
     --blue: #93b7ff;
-    --shadow: 0 22px 60px rgba(0, 0, 0, 0.42);
+    --shadow: 0 22px 60px rgba(0,0,0,.42);
     --radius: 8px;
     --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
     --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -39,8 +37,8 @@
     color: var(--text);
     font-family: var(--sans);
     background:
-      linear-gradient(160deg, rgba(240, 179, 90, 0.12), transparent 34%),
-      radial-gradient(circle at top right, rgba(147, 183, 255, 0.1), transparent 28%),
+      linear-gradient(160deg, rgba(240,179,90,.13), transparent 35%),
+      radial-gradient(circle at top right, rgba(147,183,255,.1), transparent 28%),
       var(--bg);
   }
 
@@ -48,14 +46,14 @@
 
   button {
     min-height: 44px;
-    color: inherit;
     border: 0;
+    color: inherit;
     cursor: pointer;
   }
 
   button:disabled {
     cursor: not-allowed;
-    opacity: 0.46;
+    opacity: .46;
   }
 
   button:focus-visible,
@@ -81,24 +79,21 @@
     align-items: center;
   }
 
-  .brand {
-    display: grid;
-    gap: 4px;
-  }
+  .brand { display: grid; gap: 4px; }
 
   .eyebrow {
     margin: 0;
     color: var(--amber-2);
     font-family: var(--mono);
     font-size: 12px;
-    letter-spacing: 0.16em;
+    letter-spacing: .16em;
     text-transform: uppercase;
   }
 
   h1 {
     margin: 0;
-    font-size: clamp(28px, 4.5vw, 58px);
-    line-height: 0.96;
+    font-size: clamp(30px, 4.5vw, 58px);
+    line-height: .96;
     letter-spacing: 0;
   }
 
@@ -110,7 +105,7 @@
     padding: 0 14px;
     border: 1px solid var(--line);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.045);
+    background: rgba(255,255,255,.045);
     color: var(--muted);
     font-size: 13px;
   }
@@ -120,21 +115,22 @@
     height: 10px;
     border-radius: 50%;
     background: var(--soft);
-    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.03);
+    box-shadow: 0 0 0 5px rgba(255,255,255,.03);
   }
 
-  .led.ready { background: var(--green); box-shadow: 0 0 18px rgba(143, 210, 156, 0.5); }
-  .led.recording { background: var(--red); box-shadow: 0 0 24px rgba(255, 107, 95, 0.68); animation: breathe 0.9s infinite; }
-  .led.playing { background: var(--amber); box-shadow: 0 0 24px rgba(240, 179, 90, 0.62); }
+  .led.ready { background: var(--green); box-shadow: 0 0 18px rgba(143,210,156,.5); }
+  .led.countin { background: var(--blue); box-shadow: 0 0 24px rgba(147,183,255,.62); animation: breathe .9s infinite; }
+  .led.recording { background: var(--red); box-shadow: 0 0 24px rgba(255,107,95,.68); animation: breathe .9s infinite; }
+  .led.playing { background: var(--amber); box-shadow: 0 0 24px rgba(240,179,90,.62); }
 
   @keyframes breathe {
     0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(0.7); opacity: 0.58; }
+    50% { transform: scale(.7); opacity: .58; }
   }
 
   .studio {
     display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+    grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr);
     gap: 20px;
     align-items: stretch;
   }
@@ -143,7 +139,7 @@
   .side-panel {
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    background: rgba(24, 23, 21, 0.88);
+    background: rgba(24,23,21,.9);
     box-shadow: var(--shadow);
     backdrop-filter: blur(18px);
   }
@@ -177,7 +173,7 @@
     color: var(--soft);
     font-family: var(--mono);
     font-size: 11px;
-    letter-spacing: 0.12em;
+    letter-spacing: .12em;
     text-transform: uppercase;
   }
 
@@ -205,6 +201,7 @@
   .hint {
     color: var(--soft);
     font-size: 13px;
+    text-align: right;
   }
 
   .wave-wrap {
@@ -213,8 +210,8 @@
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background:
-      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
       #12110f;
     background-size: 100% 25%, 9.09% 100%;
   }
@@ -235,7 +232,7 @@
     color: var(--soft);
     text-align: center;
     pointer-events: none;
-    transition: opacity 0.2s ease;
+    transition: opacity .2s ease;
   }
 
   .empty-state.hidden { opacity: 0; }
@@ -252,21 +249,21 @@
     height: 100%;
     border-radius: inherit;
     background: linear-gradient(90deg, var(--amber), var(--amber-2));
-    box-shadow: 0 0 18px rgba(240, 179, 90, 0.42);
+    box-shadow: 0 0 18px rgba(240,179,90,.42);
   }
 
   .transport {
     display: grid;
-    grid-template-columns: minmax(160px, 1fr) minmax(150px, 0.8fr) 54px;
+    grid-template-columns: minmax(160px, 1fr) minmax(150px, .8fr) 54px;
     gap: 10px;
   }
 
   .btn {
     border-radius: var(--radius);
-    transition: transform 0.14s ease, border-color 0.14s ease, background 0.14s ease, color 0.14s ease;
+    transition: transform .14s ease, border-color .14s ease, background .14s ease, color .14s ease;
   }
 
-  .btn:active:not(:disabled) { transform: translateY(1px) scale(0.99); }
+  .btn:active:not(:disabled) { transform: translateY(1px) scale(.99); }
 
   .btn-main,
   .btn-secondary,
@@ -281,11 +278,11 @@
   }
 
   .btn-main {
-    background: var(--red-soft);
+    background: rgba(255,107,95,.14);
     color: #ffd6d2;
-    border-color: rgba(255, 107, 95, 0.42);
+    border-color: rgba(255,107,95,.42);
     font-weight: 800;
-    letter-spacing: 0.06em;
+    letter-spacing: .06em;
     text-transform: uppercase;
   }
 
@@ -297,11 +294,11 @@
   }
 
   .btn-secondary {
-    background: rgba(240, 179, 90, 0.1);
+    background: rgba(240,179,90,.1);
     color: var(--amber-2);
-    border-color: rgba(240, 179, 90, 0.32);
+    border-color: rgba(240,179,90,.32);
     font-weight: 800;
-    letter-spacing: 0.06em;
+    letter-spacing: .06em;
     text-transform: uppercase;
   }
 
@@ -322,7 +319,7 @@
 
   .icon-btn:hover:not(:disabled) {
     color: var(--text);
-    border-color: var(--line-strong);
+    border-color: rgba(255,255,255,.2);
   }
 
   .icon {
@@ -383,27 +380,7 @@
     border: 2px solid #15100a;
     border-radius: 50%;
     background: var(--amber-2);
-    box-shadow: 0 0 16px rgba(240, 179, 90, 0.35);
-  }
-
-  input[type="range"]::-moz-range-track {
-    height: 6px;
-    border-radius: 999px;
-    background: var(--panel-3);
-  }
-
-  input[type="range"]::-moz-range-progress {
-    height: 6px;
-    border-radius: 999px;
-    background: var(--amber);
-  }
-
-  input[type="range"]::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    border: 2px solid #15100a;
-    border-radius: 50%;
-    background: var(--amber-2);
+    box-shadow: 0 0 16px rgba(240,179,90,.35);
   }
 
   .readout {
@@ -411,11 +388,6 @@
     font-family: var(--mono);
     font-size: 13px;
     text-align: right;
-  }
-
-  .metronome-grid {
-    display: grid;
-    gap: 12px;
   }
 
   .metro-top {
@@ -436,8 +408,8 @@
 
   .metro-toggle.on {
     color: var(--green);
-    border-color: rgba(143, 210, 156, 0.5);
-    background: rgba(143, 210, 156, 0.1);
+    border-color: rgba(143,210,156,.5);
+    background: rgba(143,210,156,.1);
   }
 
   .beats {
@@ -455,12 +427,12 @@
 
   .beat-light.active {
     background: var(--amber);
-    box-shadow: 0 0 16px rgba(240, 179, 90, 0.6);
+    box-shadow: 0 0 16px rgba(240,179,90,.6);
   }
 
   .beat-light.beat1.active {
     background: var(--text);
-    box-shadow: 0 0 16px rgba(245, 241, 232, 0.72);
+    box-shadow: 0 0 16px rgba(245,241,232,.72);
   }
 
   .bpm-row {
@@ -479,7 +451,7 @@
   }
 
   .stepper:hover {
-    border-color: rgba(240, 179, 90, 0.48);
+    border-color: rgba(240,179,90,.48);
     color: var(--amber-2);
   }
 
@@ -516,10 +488,10 @@
 
   .notice {
     display: none;
-    border: 1px solid rgba(255, 107, 95, 0.5);
+    border: 1px solid rgba(255,107,95,.5);
     border-radius: var(--radius);
     padding: 12px 14px;
-    background: var(--red-soft);
+    background: rgba(255,107,95,.14);
     color: #ffd6d2;
     font-size: 14px;
     line-height: 1.45;
@@ -537,7 +509,6 @@
     .studio { grid-template-columns: 1fr; }
     .deck { min-height: auto; }
     .side-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .module:last-child { border-bottom: 1px solid var(--line); padding-bottom: 16px; }
   }
 
   @media (max-width: 680px) {
@@ -558,13 +529,9 @@
     }
 
     .meter-row,
-    .side-panel {
-      grid-template-columns: 1fr;
-    }
+    .side-panel { grid-template-columns: 1fr; }
 
-    .transport {
-      grid-template-columns: 1fr 1fr 50px;
-    }
+    .transport { grid-template-columns: 1fr 1fr 50px; }
 
     .btn-main,
     .btn-secondary {
@@ -573,17 +540,15 @@
     }
 
     .btn-main .button-text,
-    .btn-secondary .button-text {
-      display: none;
-    }
+    .btn-secondary .button-text { display: none; }
   }
 </style>
 </head>
 <body>
   <main class="shell">
     <header class="topbar">
-      <div class="brand" aria-label="AYÜN DÚO Loop Station">
-        <p class="eyebrow">AYÜN DÚO</p>
+      <div class="brand" aria-label="AYUN DUO Loop Station">
+        <p class="eyebrow">AYUN DUO</p>
         <h1>Loop Station</h1>
       </div>
       <div class="session-pill" aria-live="polite">
@@ -592,11 +557,11 @@
       </div>
     </header>
 
-    <section class="studio" aria-label="Estación de loop">
+    <section class="studio" aria-label="Estacion de loop">
       <div class="deck">
-        <div class="meter-row" aria-label="Medidores de sesión">
+        <div class="meter-row" aria-label="Medidores de sesion">
           <div class="meter">
-            <span class="meter-label">Duración</span>
+            <span class="meter-label">Duracion</span>
             <strong class="meter-value"><span id="duration-val">0.0</span>s</strong>
           </div>
           <div class="meter">
@@ -616,7 +581,7 @@
           </div>
           <div class="wave-wrap">
             <canvas id="waveform"></canvas>
-            <div class="empty-state" id="empty-state">El loop aparecerá aquí cuando termines la primera toma.</div>
+            <div class="empty-state" id="empty-state">El loop aparecera aqui cuando termines la primera toma.</div>
           </div>
           <div class="timeline" aria-hidden="true">
             <div id="playhead"></div>
@@ -640,7 +605,7 @@
 
       <aside class="side-panel" aria-label="Ajustes">
         <div class="notice" id="mic-error" role="alert">
-          No se pudo acceder al micrófono. Revisa los permisos del navegador y abre la página desde localhost.
+          No se pudo acceder al microfono. Revisa los permisos del navegador y abre la pagina desde localhost.
         </div>
 
         <section class="module" aria-label="Volumen del loop">
@@ -652,8 +617,8 @@
           </div>
         </section>
 
-        <section class="module metronome-grid" aria-label="Metrónomo">
-          <span class="section-label">Metrónomo</span>
+        <section class="module" aria-label="Metronomo">
+          <span class="section-label">Metronomo visual</span>
           <div class="metro-top">
             <button class="metro-toggle" id="metro-toggle" type="button" aria-pressed="false">Apagado</button>
             <div class="beats" id="beat-lights" aria-hidden="true">
@@ -677,13 +642,13 @@
         <section class="module" aria-label="Atajos">
           <span class="section-label">Atajos</span>
           <div class="shortcuts">
-            <kbd>Espacio · Grabar</kbd>
-            <kbd>P · Play/Stop</kbd>
-            <kbd>B · Borrar</kbd>
+            <kbd>Espacio - Grabar</kbd>
+            <kbd>P - Play/Stop</kbd>
+            <kbd>B - Borrar</kbd>
           </div>
         </section>
 
-        <p class="footer-note">Para que el micrófono funcione de forma estable, usa la página desde una dirección local segura como localhost.</p>
+        <p class="footer-note">La grabacion comienza despues de 1 compas de luces. Al detener, el loop entra automaticamente.</p>
       </aside>
     </section>
   </main>
@@ -708,7 +673,10 @@ const state = {
   metroOn: false,
   bpm: 120,
   metroTimer: null,
-  beatIndex: 0
+  beatIndex: 0,
+  countInActive: false,
+  countInTimer: null,
+  countInBeat: 0
 };
 
 const els = {
@@ -795,12 +763,13 @@ async function startRecording() {
       video: false
     });
   } catch (error) {
-    showMicError("No se pudo acceder al micrófono. Revisa los permisos del navegador y abre la página desde localhost.");
+    showMicError("No se pudo acceder al microfono. Revisa los permisos del navegador y abre la pagina desde localhost.");
     return;
   }
 
   hideMicError();
   stopPlayback();
+  stopMetronome(false);
 
   const inputSource = state.audioCtx.createMediaStreamSource(state.mediaStream);
   state.analyser = state.audioCtx.createAnalyser();
@@ -813,14 +782,28 @@ async function startRecording() {
     if (event.data.size > 0) state.recordedChunks.push(event.data);
   });
   state.mediaRecorder.addEventListener("stop", handleRecordingStop, { once: true });
-  state.mediaRecorder.start();
 
-  state.isRecording = true;
-  setStatus("recording");
-  startLiveWaveform();
+  startCountIn(() => {
+    if (!state.mediaRecorder || !state.mediaStream) return;
+    state.mediaRecorder.start();
+    state.isRecording = true;
+    setStatus("recording");
+    startLiveWaveform();
+    if (state.metroOn) startMetronome();
+  });
 }
 
 function stopRecording() {
+  if (state.countInActive) {
+    cancelCountIn();
+    state.mediaStream?.getTracks().forEach(track => track.stop());
+    state.mediaStream = null;
+    state.mediaRecorder = null;
+    state.analyser = null;
+    setStatus(state.loopBuffer ? "ready" : "idle");
+    return;
+  }
+
   if (!state.mediaRecorder || !state.isRecording) return;
   state.mediaRecorder.stop();
   state.mediaStream?.getTracks().forEach(track => track.stop());
@@ -853,6 +836,7 @@ async function handleRecordingStop() {
   buildWaveformData();
   drawWaveform();
   setStatus("ready");
+  startPlayback();
 }
 
 function startPlayback() {
@@ -929,9 +913,9 @@ function drawWaveform() {
   const height = els.canvas.clientHeight;
   ctx2d.clearRect(0, 0, width, height);
 
-  els.emptyState.classList.toggle("hidden", state.waveformData.length > 0 || state.isRecording);
+  els.emptyState.classList.toggle("hidden", state.waveformData.length > 0 || state.isRecording || state.countInActive);
 
-  ctx2d.strokeStyle = "rgba(255,255,255,0.08)";
+  ctx2d.strokeStyle = "rgba(255,255,255,.08)";
   ctx2d.lineWidth = 1;
   ctx2d.beginPath();
   ctx2d.moveTo(0, height / 2);
@@ -943,15 +927,15 @@ function drawWaveform() {
   const barWidth = width / state.waveformData.length;
 
   state.waveformData.forEach((value, index) => {
-    const barHeight = Math.max(3, value * height * 0.86);
+    const barHeight = Math.max(3, value * height * .86);
     const x = index * barWidth;
     const y = (height - barHeight) / 2;
     const gradient = ctx2d.createLinearGradient(0, y, 0, y + barHeight);
     gradient.addColorStop(0, "#ffd08a");
-    gradient.addColorStop(0.52, "rgba(240,179,90,0.48)");
+    gradient.addColorStop(.52, "rgba(240,179,90,.48)");
     gradient.addColorStop(1, "#f0b35a");
     ctx2d.fillStyle = gradient;
-    ctx2d.fillRect(x + Math.max(1, barWidth * 0.16), y, Math.max(2, barWidth * 0.68), barHeight);
+    ctx2d.fillRect(x + Math.max(1, barWidth * .16), y, Math.max(2, barWidth * .68), barHeight);
   });
 }
 
@@ -985,12 +969,65 @@ function startLiveWaveform() {
   tick();
 }
 
+function startCountIn(onComplete) {
+  cancelCountIn();
+  state.countInActive = true;
+  state.countInBeat = 0;
+  setStatus("countin");
+
+  const interval = (60 / state.bpm) * 1000;
+
+  function tick() {
+    if (!state.countInActive) return;
+
+    els.beatLights.forEach((light, index) => {
+      light.classList.toggle("active", index === state.countInBeat);
+    });
+
+    state.countInBeat += 1;
+
+    if (state.countInBeat >= 4) {
+      state.countInTimer = setTimeout(() => {
+        if (!state.countInActive) return;
+        state.countInActive = false;
+        state.countInTimer = null;
+        els.beatLights.forEach(light => light.classList.remove("active"));
+        onComplete();
+      }, interval);
+      return;
+    }
+
+    state.countInTimer = setTimeout(tick, interval);
+  }
+
+  tick();
+}
+
+function cancelCountIn() {
+  clearTimeout(state.countInTimer);
+  state.countInTimer = null;
+  state.countInActive = false;
+  state.countInBeat = 0;
+  els.beatLights.forEach(light => light.classList.remove("active"));
+}
+
 function setStatus(mode) {
   els.statusLed.className = "led";
-  els.btnRecord.classList.toggle("active", mode === "recording");
+  els.btnRecord.classList.toggle("active", mode === "recording" || mode === "countin");
   els.btnPlay.classList.toggle("active", mode === "playing");
-  els.recIcon.innerHTML = mode === "recording" ? stopIcon : recordIcon;
+  els.recIcon.innerHTML = mode === "recording" || mode === "countin" ? stopIcon : recordIcon;
   els.playIcon.innerHTML = mode === "playing" ? stopIcon : playIcon;
+
+  if (mode === "countin") {
+    els.statusLed.classList.add("countin");
+    els.statusText.textContent = "Cuenta de entrada";
+    els.recLabel.textContent = "Cancelar";
+    els.playLabel.textContent = "Reproducir";
+    els.btnPlay.disabled = true;
+    els.btnClear.disabled = true;
+    els.waveHint.textContent = "Cuenta visual de 1 compas. La grabacion empieza en el segundo compas.";
+    return;
+  }
 
   if (mode === "recording") {
     els.statusLed.classList.add("recording");
@@ -999,7 +1036,7 @@ function setStatus(mode) {
     els.playLabel.textContent = "Reproducir";
     els.btnPlay.disabled = true;
     els.btnClear.disabled = true;
-    els.waveHint.textContent = "Capturando señal en vivo.";
+    els.waveHint.textContent = "Capturando desde el segundo compas.";
     return;
   }
 
@@ -1009,7 +1046,7 @@ function setStatus(mode) {
     els.recLabel.textContent = "Grabar";
     els.playLabel.textContent = "Detener";
     els.btnRecord.disabled = false;
-    els.waveHint.textContent = "Loop activo en reproducción.";
+    els.waveHint.textContent = "Loop activo en reproduccion.";
     return;
   }
 
@@ -1039,27 +1076,12 @@ function updateVolume() {
   if (state.gainNode) state.gainNode.gain.value = value / 100;
 }
 
-function playClick(accent) {
-  if (!state.audioCtx) return;
-
-  const oscillator = state.audioCtx.createOscillator();
-  const envelope = state.audioCtx.createGain();
-  oscillator.connect(envelope);
-  envelope.connect(state.audioCtx.destination);
-  oscillator.frequency.value = accent ? 1300 : 820;
-  envelope.gain.setValueAtTime(accent ? 0.38 : 0.22, state.audioCtx.currentTime);
-  envelope.gain.exponentialRampToValueAtTime(0.001, state.audioCtx.currentTime + 0.045);
-  oscillator.start(state.audioCtx.currentTime);
-  oscillator.stop(state.audioCtx.currentTime + 0.045);
-}
-
 function startMetronome() {
   stopMetronome(false);
   state.beatIndex = 0;
 
   const interval = (60 / state.bpm) * 1000;
   const tick = () => {
-    playClick(state.beatIndex === 0);
     els.beatLights.forEach((light, index) => light.classList.toggle("active", index === state.beatIndex));
     state.beatIndex = (state.beatIndex + 1) % 4;
   };
@@ -1084,11 +1106,11 @@ function stopMetronome(updateUi = true) {
 function updateBpm() {
   els.bpmVal.textContent = state.bpm;
   els.bpmDisplay.textContent = state.bpm;
-  if (state.metroOn) startMetronome();
+  if (state.metroOn && !state.countInActive) startMetronome();
 }
 
 els.btnRecord.addEventListener("click", async () => {
-  if (state.isRecording) stopRecording();
+  if (state.isRecording || state.countInActive) stopRecording();
   else await startRecording();
 });
 
@@ -1100,20 +1122,18 @@ els.btnPlay.addEventListener("click", async () => {
 });
 
 els.btnClear.addEventListener("click", () => {
-  if (state.loopBuffer && window.confirm("¿Borrar el loop actual?")) clearLoop();
+  if (state.loopBuffer && window.confirm("Borrar el loop actual?")) clearLoop();
 });
 
 els.volume.addEventListener("input", updateVolume);
 
-els.metroToggle.addEventListener("click", async () => {
-  if (!(await initAudio())) return;
-
+els.metroToggle.addEventListener("click", () => {
   state.metroOn = !state.metroOn;
   els.metroToggle.classList.toggle("on", state.metroOn);
   els.metroToggle.textContent = state.metroOn ? "Encendido" : "Apagado";
   els.metroToggle.setAttribute("aria-pressed", String(state.metroOn));
 
-  if (state.metroOn) startMetronome();
+  if (state.metroOn && !state.countInActive) startMetronome();
   else stopMetronome(false);
 });
 
@@ -1132,7 +1152,7 @@ document.addEventListener("keydown", async event => {
 
   if (event.code === "Space") {
     event.preventDefault();
-    if (state.isRecording) stopRecording();
+    if (state.isRecording || state.countInActive) stopRecording();
     else await startRecording();
   }
 
@@ -1154,6 +1174,7 @@ window.addEventListener("resize", resizeCanvas);
 window.addEventListener("beforeunload", () => {
   stopPlayback();
   stopMetronome(false);
+  cancelCountIn();
   state.mediaStream?.getTracks().forEach(track => track.stop());
 });
 
