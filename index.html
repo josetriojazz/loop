@@ -279,6 +279,33 @@
     font-family: var(--mono);
     font-size: 12px;
     text-align: right;
+    white-space: nowrap;
+  }
+
+  .track-name-input {
+    flex: 1;
+    min-width: 0;
+    padding: 5px 7px;
+    margin: -5px -7px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text);
+    font-weight: 700;
+    font-size: 1em;
+  }
+
+  .track-name-input::placeholder { color: var(--soft); }
+
+  .track-name-input:hover {
+    border-color: var(--line);
+    background: rgba(255,255,255,.045);
+  }
+
+  .track-name-input:focus-visible {
+    border-color: rgba(240,179,90,.5);
+    background: rgba(255,255,255,.045);
+    outline: 0;
   }
 
   .track-actions {
@@ -668,11 +695,12 @@
           </div>
         </section>
 
-        <section class="module" aria-label="Pista secundaria">
-          <span class="section-label">Pista 2</span>
+        <section class="module" aria-label="Pistas adicionales">
+          <span class="section-label">Pistas guardadas</span>
+
           <div class="track-card">
             <div class="track-head">
-              <strong>Grabacion guardada</strong>
+              <input type="text" class="track-name-input" id="track2-name" value="Pista 2" maxlength="40" aria-label="Nombre de la pista 2">
               <span class="track-status" id="track2-status">Vacia</span>
             </div>
             <div class="track-actions">
@@ -689,6 +717,88 @@
               </button>
             </div>
           </div>
+
+          <div class="track-card">
+            <div class="track-head">
+              <input type="text" class="track-name-input" id="track3-name" value="Pista 3" maxlength="40" aria-label="Nombre de la pista 3">
+              <span class="track-status" id="track3-status">Vacia</span>
+            </div>
+            <div class="track-actions">
+              <button class="btn btn-main" id="track3-record" type="button">
+                <svg class="icon" id="track3-rec-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"></circle></svg>
+                <span id="track3-rec-label">Grabar</span>
+              </button>
+              <button class="btn btn-secondary" id="track3-play" type="button" disabled>
+                <svg class="icon" id="track3-play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>
+                <span id="track3-play-label">Play</span>
+              </button>
+              <button class="btn icon-btn" id="track3-clear" type="button" disabled aria-label="Borrar pista 3" title="Borrar pista 3">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12 19 6.4 17.6 5 12 10.6z"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="track-card">
+            <div class="track-head">
+              <input type="text" class="track-name-input" id="track4-name" value="Pista 4" maxlength="40" aria-label="Nombre de la pista 4">
+              <span class="track-status" id="track4-status">Vacia</span>
+            </div>
+            <div class="track-actions">
+              <button class="btn btn-main" id="track4-record" type="button">
+                <svg class="icon" id="track4-rec-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"></circle></svg>
+                <span id="track4-rec-label">Grabar</span>
+              </button>
+              <button class="btn btn-secondary" id="track4-play" type="button" disabled>
+                <svg class="icon" id="track4-play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>
+                <span id="track4-play-label">Play</span>
+              </button>
+              <button class="btn icon-btn" id="track4-clear" type="button" disabled aria-label="Borrar pista 4" title="Borrar pista 4">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12 19 6.4 17.6 5 12 10.6z"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="track-card">
+            <div class="track-head">
+              <input type="text" class="track-name-input" id="track5-name" value="Pista 5" maxlength="40" aria-label="Nombre de la pista 5">
+              <span class="track-status" id="track5-status">Vacia</span>
+            </div>
+            <div class="track-actions">
+              <button class="btn btn-main" id="track5-record" type="button">
+                <svg class="icon" id="track5-rec-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"></circle></svg>
+                <span id="track5-rec-label">Grabar</span>
+              </button>
+              <button class="btn btn-secondary" id="track5-play" type="button" disabled>
+                <svg class="icon" id="track5-play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>
+                <span id="track5-play-label">Play</span>
+              </button>
+              <button class="btn icon-btn" id="track5-clear" type="button" disabled aria-label="Borrar pista 5" title="Borrar pista 5">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12 19 6.4 17.6 5 12 10.6z"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="track-card">
+            <div class="track-head">
+              <input type="text" class="track-name-input" id="track6-name" value="Pista 6" maxlength="40" aria-label="Nombre de la pista 6">
+              <span class="track-status" id="track6-status">Vacia</span>
+            </div>
+            <div class="track-actions">
+              <button class="btn btn-main" id="track6-record" type="button">
+                <svg class="icon" id="track6-rec-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"></circle></svg>
+                <span id="track6-rec-label">Grabar</span>
+              </button>
+              <button class="btn btn-secondary" id="track6-play" type="button" disabled>
+                <svg class="icon" id="track6-play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>
+                <span id="track6-play-label">Play</span>
+              </button>
+              <button class="btn icon-btn" id="track6-clear" type="button" disabled aria-label="Borrar pista 6" title="Borrar pista 6">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12 19 6.4 17.6 5 12 10.6z"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <p class="footer-note" style="margin:0;">Toca el nombre de cada pista para renombrarla. Se guarda sola.</p>
         </section>
 
         <section class="module" aria-label="Atajos">
@@ -730,17 +840,16 @@ const state = {
   countInTimer: null,
   countInBeat: 0,
   activeTarget: null,
-  track2: {
-    buffer: null,
-    sourceNode: null,
-    chunks: [],
-    dataUrl: "",
-    duration: 0,
-    isRecording: false,
-    isPlaying: false,
-    startTime: 0
+  tracks: {
+    track2: { buffer: null, sourceNode: null, chunks: [], dataUrl: "", duration: 0, name: "", isRecording: false, isPlaying: false, startTime: 0 },
+    track3: { buffer: null, sourceNode: null, chunks: [], dataUrl: "", duration: 0, name: "", isRecording: false, isPlaying: false, startTime: 0 },
+    track4: { buffer: null, sourceNode: null, chunks: [], dataUrl: "", duration: 0, name: "", isRecording: false, isPlaying: false, startTime: 0 },
+    track5: { buffer: null, sourceNode: null, chunks: [], dataUrl: "", duration: 0, name: "", isRecording: false, isPlaying: false, startTime: 0 },
+    track6: { buffer: null, sourceNode: null, chunks: [], dataUrl: "", duration: 0, name: "", isRecording: false, isPlaying: false, startTime: 0 }
   }
 };
+
+const trackIds = ["track2", "track3", "track4", "track5", "track6"];
 
 const els = {
   btnRecord: document.getElementById("btn-record"),
@@ -766,16 +875,23 @@ const els = {
   beatLights: document.querySelectorAll(".beat-light"),
   micError: document.getElementById("mic-error"),
   emptyState: document.getElementById("empty-state"),
-  waveHint: document.getElementById("wave-hint"),
-  track2Record: document.getElementById("track2-record"),
-  track2RecIcon: document.getElementById("track2-rec-icon"),
-  track2RecLabel: document.getElementById("track2-rec-label"),
-  track2Play: document.getElementById("track2-play"),
-  track2PlayIcon: document.getElementById("track2-play-icon"),
-  track2PlayLabel: document.getElementById("track2-play-label"),
-  track2Clear: document.getElementById("track2-clear"),
-  track2Status: document.getElementById("track2-status")
+  waveHint: document.getElementById("wave-hint")
 };
+
+const tracksEls = {};
+trackIds.forEach(id => {
+  tracksEls[id] = {
+    nameInput: document.getElementById(`${id}-name`),
+    record: document.getElementById(`${id}-record`),
+    recIcon: document.getElementById(`${id}-rec-icon`),
+    recLabel: document.getElementById(`${id}-rec-label`),
+    play: document.getElementById(`${id}-play`),
+    playIcon: document.getElementById(`${id}-play-icon`),
+    playLabel: document.getElementById(`${id}-play-label`),
+    clear: document.getElementById(`${id}-clear`),
+    status: document.getElementById(`${id}-status`)
+  };
+});
 
 const ctx2d = els.canvas.getContext("2d");
 const recordIcon = '<circle cx="12" cy="12" r="7"></circle>';
@@ -825,8 +941,12 @@ function hideMicError() {
   els.micError.classList.remove("show");
 }
 
+function isAnyTrackRecording() {
+  return trackIds.some(id => state.tracks[id].isRecording);
+}
+
 async function startRecording() {
-  if (state.countInActive || state.track2.isRecording) return;
+  if (state.countInActive || isAnyTrackRecording()) return;
   if (!(await initAudio())) return;
 
   try {
@@ -914,8 +1034,8 @@ async function handleRecordingStop() {
   startPlayback();
 }
 
-async function startTrack2Recording() {
-  if (state.countInActive || state.isRecording) return;
+async function startTrackRecording(id) {
+  if (state.countInActive || state.isRecording || isAnyTrackRecording()) return;
   if (!(await initAudio())) return;
 
   try {
@@ -929,125 +1049,162 @@ async function startTrack2Recording() {
   }
 
   hideMicError();
-  stopTrack2Playback();
+  stopTrackPlayback(id);
   stopMetronome(false);
 
-  state.track2.chunks = [];
+  const track = state.tracks[id];
+  track.chunks = [];
   state.mediaRecorder = new MediaRecorder(state.mediaStream);
   state.mediaRecorder.addEventListener("dataavailable", event => {
-    if (event.data.size > 0) state.track2.chunks.push(event.data);
+    if (event.data.size > 0) track.chunks.push(event.data);
   });
-  state.mediaRecorder.addEventListener("stop", handleTrack2Stop, { once: true });
-  state.activeTarget = "track2";
+  state.mediaRecorder.addEventListener("stop", () => handleTrackStop(id), { once: true });
+  state.activeTarget = id;
 
   startCountIn(() => {
-    if (!state.mediaRecorder || !state.mediaStream || state.activeTarget !== "track2") return;
+    if (!state.mediaRecorder || !state.mediaStream || state.activeTarget !== id) return;
     state.mediaRecorder.start();
-    state.track2.isRecording = true;
-    setTrack2Status("recording");
+    track.isRecording = true;
+    setTrackStatus(id, "recording");
     if (state.metroOn) startMetronome();
   });
-  setTrack2Status("countin");
+  setTrackStatus(id, "countin");
 }
 
-function stopTrack2Recording() {
-  if (state.countInActive && state.activeTarget === "track2") {
+function stopTrackRecording(id) {
+  const track = state.tracks[id];
+
+  if (state.countInActive && state.activeTarget === id) {
     cancelCountIn();
-    state.mediaStream?.getTracks().forEach(track => track.stop());
+    state.mediaStream?.getTracks().forEach(streamTrack => streamTrack.stop());
     state.mediaStream = null;
     state.mediaRecorder = null;
     state.activeTarget = null;
     setStatus(state.loopBuffer ? "ready" : "idle");
-    setTrack2Status(state.track2.buffer ? "ready" : "empty");
+    setTrackStatus(id, track.buffer ? "ready" : "empty");
     return;
   }
 
-  if (!state.mediaRecorder || !state.track2.isRecording) return;
+  if (!state.mediaRecorder || !track.isRecording) return;
   state.mediaRecorder.stop();
-  state.mediaStream?.getTracks().forEach(track => track.stop());
+  state.mediaStream?.getTracks().forEach(streamTrack => streamTrack.stop());
   state.mediaStream = null;
-  state.track2.isRecording = false;
+  track.isRecording = false;
   state.activeTarget = null;
 }
 
-async function handleTrack2Stop() {
-  if (!state.track2.chunks.length) {
-    setTrack2Status("empty");
+async function handleTrackStop(id) {
+  const track = state.tracks[id];
+
+  if (!track.chunks.length) {
+    setTrackStatus(id, "empty");
     return;
   }
 
-  const blob = new Blob(state.track2.chunks, { type: state.track2.chunks[0].type || "audio/webm" });
+  const blob = new Blob(track.chunks, { type: track.chunks[0].type || "audio/webm" });
   const arrayBuffer = await blob.arrayBuffer();
 
   try {
-    state.track2.buffer = await state.audioCtx.decodeAudioData(arrayBuffer.slice(0));
+    track.buffer = await state.audioCtx.decodeAudioData(arrayBuffer.slice(0));
   } catch (error) {
-    showMicError("La pista 2 no pudo procesarse. Intenta grabar nuevamente.");
-    setTrack2Status("empty");
+    showMicError(`La pista "${track.name}" no pudo procesarse. Intenta grabar nuevamente.`);
+    setTrackStatus(id, "empty");
     return;
   }
 
-  state.track2.duration = state.track2.buffer.duration;
-  state.track2.dataUrl = await blobToDataUrl(blob);
-  saveTrack2();
-  setTrack2Status("ready");
+  track.duration = track.buffer.duration;
+  track.dataUrl = await blobToDataUrl(blob);
+  saveTrack(id);
+  setTrackStatus(id, "ready");
 }
 
-function startTrack2Playback() {
-  if (!state.track2.buffer || state.track2.isPlaying) return;
+function startTrackPlayback(id) {
+  const track = state.tracks[id];
+  if (!track.buffer || track.isPlaying) return;
   if (state.audioCtx.state === "suspended") state.audioCtx.resume();
 
-  state.track2.sourceNode = state.audioCtx.createBufferSource();
-  state.track2.sourceNode.buffer = state.track2.buffer;
-  state.track2.sourceNode.connect(state.gainNode);
-  state.track2.sourceNode.addEventListener("ended", () => {
-    state.track2.isPlaying = false;
-    state.track2.sourceNode = null;
-    setTrack2Status("ready");
+  track.sourceNode = state.audioCtx.createBufferSource();
+  track.sourceNode.buffer = track.buffer;
+  track.sourceNode.connect(state.gainNode);
+  track.sourceNode.addEventListener("ended", () => {
+    track.isPlaying = false;
+    track.sourceNode = null;
+    setTrackStatus(id, "ready");
   }, { once: true });
-  state.track2.sourceNode.start(0);
-  state.track2.startTime = state.audioCtx.currentTime;
-  state.track2.isPlaying = true;
-  setTrack2Status("playing");
+  track.sourceNode.start(0);
+  track.startTime = state.audioCtx.currentTime;
+  track.isPlaying = true;
+  setTrackStatus(id, "playing");
 }
 
-function stopTrack2Playback() {
-  if (state.track2.sourceNode) {
-    try { state.track2.sourceNode.stop(); } catch (error) {}
-    state.track2.sourceNode.disconnect();
-    state.track2.sourceNode = null;
+function stopTrackPlayback(id) {
+  const track = state.tracks[id];
+
+  if (track.sourceNode) {
+    try { track.sourceNode.stop(); } catch (error) {}
+    track.sourceNode.disconnect();
+    track.sourceNode = null;
   }
 
-  state.track2.isPlaying = false;
-  if (state.track2.buffer) setTrack2Status("ready");
+  track.isPlaying = false;
+  if (track.buffer) setTrackStatus(id, "ready");
 }
 
-function clearTrack2() {
-  stopTrack2Playback();
-  state.track2.buffer = null;
-  state.track2.chunks = [];
-  state.track2.dataUrl = "";
-  state.track2.duration = 0;
-  localStorage.removeItem("ayunTrack2");
-  setTrack2Status("empty");
+function clearTrack(id) {
+  const track = state.tracks[id];
+  stopTrackPlayback(id);
+  track.buffer = null;
+  track.chunks = [];
+  track.dataUrl = "";
+  track.duration = 0;
+  localStorage.removeItem(storageKey(id));
+  setTrackStatus(id, "empty");
 }
 
-function saveTrack2() {
+function storageKey(id) {
+  return `ayun${id.charAt(0).toUpperCase()}${id.slice(1)}`;
+}
+
+function saveTrack(id) {
+  const track = state.tracks[id];
   try {
-    localStorage.setItem("ayunTrack2", JSON.stringify({
-      dataUrl: state.track2.dataUrl,
-      duration: state.track2.duration,
+    localStorage.setItem(storageKey(id), JSON.stringify({
+      name: track.name,
+      dataUrl: track.dataUrl,
+      duration: track.duration,
       savedAt: new Date().toISOString()
     }));
   } catch (error) {
-    showMicError("La pista 2 se grabo, pero el navegador no pudo guardarla localmente por espacio insuficiente.");
+    showMicError("La pista se grabo, pero el navegador no pudo guardarla localmente por espacio insuficiente.");
   }
 }
 
-async function loadTrack2() {
-  const raw = localStorage.getItem("ayunTrack2");
+function saveTrackName(id) {
+  const track = state.tracks[id];
+  if (track.dataUrl) {
+    saveTrack(id);
+    return;
+  }
+
+  try {
+    localStorage.setItem(`${storageKey(id)}Name`, track.name);
+  } catch (error) {}
+}
+
+async function loadTrack(id) {
+  const track = state.tracks[id];
+  const key = storageKey(id);
+  const raw = localStorage.getItem(key);
+
   if (!raw) {
-    setTrack2Status("empty");
+    const savedName = localStorage.getItem(`${key}Name`);
+    if (savedName) {
+      track.name = savedName;
+      tracksEls[id].nameInput.value = savedName;
+    } else {
+      track.name = tracksEls[id].nameInput.value;
+    }
+    setTrackStatus(id, "empty");
     return;
   }
 
@@ -1056,13 +1213,16 @@ async function loadTrack2() {
     if (!saved.dataUrl) throw new Error("missing data");
     if (!(await initAudio())) return;
     const arrayBuffer = dataUrlToArrayBuffer(saved.dataUrl);
-    state.track2.buffer = await state.audioCtx.decodeAudioData(arrayBuffer);
-    state.track2.dataUrl = saved.dataUrl;
-    state.track2.duration = state.track2.buffer.duration || saved.duration || 0;
-    setTrack2Status("ready");
+    track.buffer = await state.audioCtx.decodeAudioData(arrayBuffer);
+    track.dataUrl = saved.dataUrl;
+    track.duration = track.buffer.duration || saved.duration || 0;
+    track.name = saved.name || tracksEls[id].nameInput.value;
+    tracksEls[id].nameInput.value = track.name;
+    setTrackStatus(id, "ready");
   } catch (error) {
-    localStorage.removeItem("ayunTrack2");
-    setTrack2Status("empty");
+    localStorage.removeItem(key);
+    track.name = tracksEls[id].nameInput.value;
+    setTrackStatus(id, "empty");
   }
 }
 
@@ -1314,49 +1474,52 @@ function setStatus(mode) {
   els.btnRecord.disabled = false;
 }
 
-function setTrack2Status(mode) {
-  els.track2Record.classList.toggle("active", mode === "recording" || mode === "countin");
-  els.track2Play.classList.toggle("active", mode === "playing");
-  els.track2RecIcon.innerHTML = mode === "recording" || mode === "countin" ? stopIcon : recordIcon;
-  els.track2PlayIcon.innerHTML = mode === "playing" ? stopIcon : playIcon;
+function setTrackStatus(id, mode) {
+  const track = state.tracks[id];
+  const e = tracksEls[id];
+
+  e.record.classList.toggle("active", mode === "recording" || mode === "countin");
+  e.play.classList.toggle("active", mode === "playing");
+  e.recIcon.innerHTML = mode === "recording" || mode === "countin" ? stopIcon : recordIcon;
+  e.playIcon.innerHTML = mode === "playing" ? stopIcon : playIcon;
 
   if (mode === "countin") {
-    els.track2Status.textContent = "Cuenta 2 compases";
-    els.track2RecLabel.textContent = "Cancelar";
-    els.track2Play.disabled = true;
-    els.track2Clear.disabled = true;
+    e.status.textContent = "Cuenta 2 compases";
+    e.recLabel.textContent = "Cancelar";
+    e.play.disabled = true;
+    e.clear.disabled = true;
     return;
   }
 
   if (mode === "recording") {
-    els.track2Status.textContent = "Grabando";
-    els.track2RecLabel.textContent = "Detener";
-    els.track2Play.disabled = true;
-    els.track2Clear.disabled = true;
+    e.status.textContent = "Grabando";
+    e.recLabel.textContent = "Detener";
+    e.play.disabled = true;
+    e.clear.disabled = true;
     return;
   }
 
   if (mode === "playing") {
-    els.track2Status.textContent = "Reproduciendo";
-    els.track2RecLabel.textContent = "Grabar";
-    els.track2PlayLabel.textContent = "Pausa";
-    els.track2Play.disabled = false;
-    els.track2Clear.disabled = false;
+    e.status.textContent = "Reproduciendo";
+    e.recLabel.textContent = "Grabar";
+    e.playLabel.textContent = "Pausa";
+    e.play.disabled = false;
+    e.clear.disabled = false;
     return;
   }
 
-  if (state.track2.buffer) {
-    els.track2Status.textContent = `${state.track2.duration.toFixed(1)}s guardados`;
-    els.track2Play.disabled = false;
-    els.track2Clear.disabled = false;
+  if (track.buffer) {
+    e.status.textContent = `${track.duration.toFixed(1)}s guardados`;
+    e.play.disabled = false;
+    e.clear.disabled = false;
   } else {
-    els.track2Status.textContent = "Vacia";
-    els.track2Play.disabled = true;
-    els.track2Clear.disabled = true;
+    e.status.textContent = "Vacia";
+    e.play.disabled = true;
+    e.clear.disabled = true;
   }
 
-  els.track2RecLabel.textContent = "Grabar";
-  els.track2PlayLabel.textContent = "Play";
+  e.recLabel.textContent = "Grabar";
+  e.playLabel.textContent = "Play";
 }
 
 function updateVolume() {
@@ -1401,8 +1564,8 @@ function updateBpm() {
 }
 
 els.btnRecord.addEventListener("click", async () => {
-  if (state.countInActive && state.activeTarget === "track2") {
-    stopTrack2Recording();
+  if (state.countInActive && state.activeTarget && state.activeTarget !== "main") {
+    stopTrackRecording(state.activeTarget);
     return;
   }
 
@@ -1410,20 +1573,32 @@ els.btnRecord.addEventListener("click", async () => {
   else await startRecording();
 });
 
-els.track2Record.addEventListener("click", async () => {
-  if (state.track2.isRecording || (state.countInActive && state.activeTarget === "track2")) stopTrack2Recording();
-  else await startTrack2Recording();
-});
+trackIds.forEach(id => {
+  const e = tracksEls[id];
+  const track = state.tracks[id];
+  track.name = e.nameInput.value;
 
-els.track2Play.addEventListener("click", async () => {
-  if (!state.track2.buffer) return;
-  await initAudio();
-  if (state.track2.isPlaying) stopTrack2Playback();
-  else startTrack2Playback();
-});
+  e.nameInput.addEventListener("change", () => {
+    track.name = e.nameInput.value.trim() || e.nameInput.defaultValue;
+    e.nameInput.value = track.name;
+    saveTrackName(id);
+  });
 
-els.track2Clear.addEventListener("click", () => {
-  if (state.track2.buffer && window.confirm("Borrar la pista 2 guardada?")) clearTrack2();
+  e.record.addEventListener("click", async () => {
+    if (track.isRecording || (state.countInActive && state.activeTarget === id)) stopTrackRecording(id);
+    else await startTrackRecording(id);
+  });
+
+  e.play.addEventListener("click", async () => {
+    if (!track.buffer) return;
+    await initAudio();
+    if (track.isPlaying) stopTrackPlayback(id);
+    else startTrackPlayback(id);
+  });
+
+  e.clear.addEventListener("click", () => {
+    if (track.buffer && window.confirm(`Borrar "${track.name}" guardada?`)) clearTrack(id);
+  });
 });
 
 els.btnPlay.addEventListener("click", async () => {
@@ -1464,8 +1639,8 @@ document.addEventListener("keydown", async event => {
 
   if (event.code === "Space") {
     event.preventDefault();
-    if (state.countInActive && state.activeTarget === "track2") {
-      stopTrack2Recording();
+    if (state.countInActive && state.activeTarget && state.activeTarget !== "main") {
+      stopTrackRecording(state.activeTarget);
       return;
     }
 
@@ -1490,7 +1665,7 @@ document.addEventListener("keydown", async event => {
 window.addEventListener("resize", resizeCanvas);
 window.addEventListener("beforeunload", () => {
   stopPlayback();
-  stopTrack2Playback();
+  trackIds.forEach(id => stopTrackPlayback(id));
   stopMetronome(false);
   cancelCountIn();
   state.mediaStream?.getTracks().forEach(track => track.stop());
@@ -1499,9 +1674,9 @@ window.addEventListener("beforeunload", () => {
 updateVolume();
 updateBpm();
 setStatus("idle");
-setTrack2Status("empty");
+trackIds.forEach(id => setTrackStatus(id, "empty"));
 requestAnimationFrame(resizeCanvas);
-loadTrack2();
+trackIds.forEach(id => loadTrack(id));
 </script>
 </body>
 </html>
