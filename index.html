@@ -258,6 +258,35 @@
     gap: 10px;
   }
 
+  .track-card {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #12110f;
+  }
+
+  .track-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .track-status {
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 12px;
+    text-align: right;
+  }
+
+  .track-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr 48px;
+    gap: 8px;
+  }
+
   .btn {
     border-radius: var(--radius);
     transition: transform .14s ease, border-color .14s ease, background .14s ease, color .14s ease;
@@ -639,6 +668,29 @@
           </div>
         </section>
 
+        <section class="module" aria-label="Pista secundaria">
+          <span class="section-label">Pista 2</span>
+          <div class="track-card">
+            <div class="track-head">
+              <strong>Grabacion guardada</strong>
+              <span class="track-status" id="track2-status">Vacia</span>
+            </div>
+            <div class="track-actions">
+              <button class="btn btn-main" id="track2-record" type="button">
+                <svg class="icon" id="track2-rec-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"></circle></svg>
+                <span id="track2-rec-label">Grabar</span>
+              </button>
+              <button class="btn btn-secondary" id="track2-play" type="button" disabled>
+                <svg class="icon" id="track2-play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>
+                <span id="track2-play-label">Play</span>
+              </button>
+              <button class="btn icon-btn" id="track2-clear" type="button" disabled aria-label="Borrar pista 2" title="Borrar pista 2">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12 19 6.4 17.6 5 12 10.6z"></path></svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
         <section class="module" aria-label="Atajos">
           <span class="section-label">Atajos</span>
           <div class="shortcuts">
@@ -648,7 +700,7 @@
           </div>
         </section>
 
-        <p class="footer-note">La grabacion comienza despues de 1 compas de luces. Al detener, el loop entra automaticamente.</p>
+        <p class="footer-note">La grabacion comienza despues de 2 compases de luces. Al detener, el loop entra automaticamente.</p>
       </aside>
     </section>
   </main>
@@ -676,7 +728,18 @@ const state = {
   beatIndex: 0,
   countInActive: false,
   countInTimer: null,
-  countInBeat: 0
+  countInBeat: 0,
+  activeTarget: null,
+  track2: {
+    buffer: null,
+    sourceNode: null,
+    chunks: [],
+    dataUrl: "",
+    duration: 0,
+    isRecording: false,
+    isPlaying: false,
+    startTime: 0
+  }
 };
 
 const els = {
@@ -703,7 +766,15 @@ const els = {
   beatLights: document.querySelectorAll(".beat-light"),
   micError: document.getElementById("mic-error"),
   emptyState: document.getElementById("empty-state"),
-  waveHint: document.getElementById("wave-hint")
+  waveHint: document.getElementById("wave-hint"),
+  track2Record: document.getElementById("track2-record"),
+  track2RecIcon: document.getElementById("track2-rec-icon"),
+  track2RecLabel: document.getElementById("track2-rec-label"),
+  track2Play: document.getElementById("track2-play"),
+  track2PlayIcon: document.getElementById("track2-play-icon"),
+  track2PlayLabel: document.getElementById("track2-play-label"),
+  track2Clear: document.getElementById("track2-clear"),
+  track2Status: document.getElementById("track2-status")
 };
 
 const ctx2d = els.canvas.getContext("2d");
@@ -755,6 +826,7 @@ function hideMicError() {
 }
 
 async function startRecording() {
+  if (state.countInActive || state.track2.isRecording) return;
   if (!(await initAudio())) return;
 
   try {
@@ -782,9 +854,10 @@ async function startRecording() {
     if (event.data.size > 0) state.recordedChunks.push(event.data);
   });
   state.mediaRecorder.addEventListener("stop", handleRecordingStop, { once: true });
+  state.activeTarget = "main";
 
   startCountIn(() => {
-    if (!state.mediaRecorder || !state.mediaStream) return;
+    if (!state.mediaRecorder || !state.mediaStream || state.activeTarget !== "main") return;
     state.mediaRecorder.start();
     state.isRecording = true;
     setStatus("recording");
@@ -800,6 +873,7 @@ function stopRecording() {
     state.mediaStream = null;
     state.mediaRecorder = null;
     state.analyser = null;
+    state.activeTarget = null;
     setStatus(state.loopBuffer ? "ready" : "idle");
     return;
   }
@@ -809,6 +883,7 @@ function stopRecording() {
   state.mediaStream?.getTracks().forEach(track => track.stop());
   state.mediaStream = null;
   state.isRecording = false;
+  state.activeTarget = null;
   cancelAnimationFrame(state.waveformRAF);
 }
 
@@ -837,6 +912,177 @@ async function handleRecordingStop() {
   drawWaveform();
   setStatus("ready");
   startPlayback();
+}
+
+async function startTrack2Recording() {
+  if (state.countInActive || state.isRecording) return;
+  if (!(await initAudio())) return;
+
+  try {
+    state.mediaStream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+      video: false
+    });
+  } catch (error) {
+    showMicError("No se pudo acceder al microfono. Revisa los permisos del navegador y abre la pagina desde localhost.");
+    return;
+  }
+
+  hideMicError();
+  stopTrack2Playback();
+  stopMetronome(false);
+
+  state.track2.chunks = [];
+  state.mediaRecorder = new MediaRecorder(state.mediaStream);
+  state.mediaRecorder.addEventListener("dataavailable", event => {
+    if (event.data.size > 0) state.track2.chunks.push(event.data);
+  });
+  state.mediaRecorder.addEventListener("stop", handleTrack2Stop, { once: true });
+  state.activeTarget = "track2";
+
+  startCountIn(() => {
+    if (!state.mediaRecorder || !state.mediaStream || state.activeTarget !== "track2") return;
+    state.mediaRecorder.start();
+    state.track2.isRecording = true;
+    setTrack2Status("recording");
+    if (state.metroOn) startMetronome();
+  });
+  setTrack2Status("countin");
+}
+
+function stopTrack2Recording() {
+  if (state.countInActive && state.activeTarget === "track2") {
+    cancelCountIn();
+    state.mediaStream?.getTracks().forEach(track => track.stop());
+    state.mediaStream = null;
+    state.mediaRecorder = null;
+    state.activeTarget = null;
+    setStatus(state.loopBuffer ? "ready" : "idle");
+    setTrack2Status(state.track2.buffer ? "ready" : "empty");
+    return;
+  }
+
+  if (!state.mediaRecorder || !state.track2.isRecording) return;
+  state.mediaRecorder.stop();
+  state.mediaStream?.getTracks().forEach(track => track.stop());
+  state.mediaStream = null;
+  state.track2.isRecording = false;
+  state.activeTarget = null;
+}
+
+async function handleTrack2Stop() {
+  if (!state.track2.chunks.length) {
+    setTrack2Status("empty");
+    return;
+  }
+
+  const blob = new Blob(state.track2.chunks, { type: state.track2.chunks[0].type || "audio/webm" });
+  const arrayBuffer = await blob.arrayBuffer();
+
+  try {
+    state.track2.buffer = await state.audioCtx.decodeAudioData(arrayBuffer.slice(0));
+  } catch (error) {
+    showMicError("La pista 2 no pudo procesarse. Intenta grabar nuevamente.");
+    setTrack2Status("empty");
+    return;
+  }
+
+  state.track2.duration = state.track2.buffer.duration;
+  state.track2.dataUrl = await blobToDataUrl(blob);
+  saveTrack2();
+  setTrack2Status("ready");
+}
+
+function startTrack2Playback() {
+  if (!state.track2.buffer || state.track2.isPlaying) return;
+  if (state.audioCtx.state === "suspended") state.audioCtx.resume();
+
+  state.track2.sourceNode = state.audioCtx.createBufferSource();
+  state.track2.sourceNode.buffer = state.track2.buffer;
+  state.track2.sourceNode.connect(state.gainNode);
+  state.track2.sourceNode.addEventListener("ended", () => {
+    state.track2.isPlaying = false;
+    state.track2.sourceNode = null;
+    setTrack2Status("ready");
+  }, { once: true });
+  state.track2.sourceNode.start(0);
+  state.track2.startTime = state.audioCtx.currentTime;
+  state.track2.isPlaying = true;
+  setTrack2Status("playing");
+}
+
+function stopTrack2Playback() {
+  if (state.track2.sourceNode) {
+    try { state.track2.sourceNode.stop(); } catch (error) {}
+    state.track2.sourceNode.disconnect();
+    state.track2.sourceNode = null;
+  }
+
+  state.track2.isPlaying = false;
+  if (state.track2.buffer) setTrack2Status("ready");
+}
+
+function clearTrack2() {
+  stopTrack2Playback();
+  state.track2.buffer = null;
+  state.track2.chunks = [];
+  state.track2.dataUrl = "";
+  state.track2.duration = 0;
+  localStorage.removeItem("ayunTrack2");
+  setTrack2Status("empty");
+}
+
+function saveTrack2() {
+  try {
+    localStorage.setItem("ayunTrack2", JSON.stringify({
+      dataUrl: state.track2.dataUrl,
+      duration: state.track2.duration,
+      savedAt: new Date().toISOString()
+    }));
+  } catch (error) {
+    showMicError("La pista 2 se grabo, pero el navegador no pudo guardarla localmente por espacio insuficiente.");
+  }
+}
+
+async function loadTrack2() {
+  const raw = localStorage.getItem("ayunTrack2");
+  if (!raw) {
+    setTrack2Status("empty");
+    return;
+  }
+
+  try {
+    const saved = JSON.parse(raw);
+    if (!saved.dataUrl) throw new Error("missing data");
+    if (!(await initAudio())) return;
+    const arrayBuffer = dataUrlToArrayBuffer(saved.dataUrl);
+    state.track2.buffer = await state.audioCtx.decodeAudioData(arrayBuffer);
+    state.track2.dataUrl = saved.dataUrl;
+    state.track2.duration = state.track2.buffer.duration || saved.duration || 0;
+    setTrack2Status("ready");
+  } catch (error) {
+    localStorage.removeItem("ayunTrack2");
+    setTrack2Status("empty");
+  }
+}
+
+function blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+function dataUrlToArrayBuffer(dataUrl) {
+  const base64 = dataUrl.split(",")[1] || "";
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes.buffer;
 }
 
 function startPlayback() {
@@ -981,12 +1227,12 @@ function startCountIn(onComplete) {
     if (!state.countInActive) return;
 
     els.beatLights.forEach((light, index) => {
-      light.classList.toggle("active", index === state.countInBeat);
+      light.classList.toggle("active", index === state.countInBeat % 4);
     });
 
     state.countInBeat += 1;
 
-    if (state.countInBeat >= 4) {
+    if (state.countInBeat >= 8) {
       state.countInTimer = setTimeout(() => {
         if (!state.countInActive) return;
         state.countInActive = false;
@@ -1025,7 +1271,7 @@ function setStatus(mode) {
     els.playLabel.textContent = "Reproducir";
     els.btnPlay.disabled = true;
     els.btnClear.disabled = true;
-    els.waveHint.textContent = "Cuenta visual de 1 compas. La grabacion empieza en el segundo compas.";
+    els.waveHint.textContent = "Cuenta visual de 2 compases. La grabacion empieza en el tercer compas.";
     return;
   }
 
@@ -1036,7 +1282,7 @@ function setStatus(mode) {
     els.playLabel.textContent = "Reproducir";
     els.btnPlay.disabled = true;
     els.btnClear.disabled = true;
-    els.waveHint.textContent = "Capturando desde el segundo compas.";
+    els.waveHint.textContent = "Capturando desde el tercer compas.";
     return;
   }
 
@@ -1066,6 +1312,51 @@ function setStatus(mode) {
   els.recLabel.textContent = "Grabar";
   els.playLabel.textContent = "Reproducir";
   els.btnRecord.disabled = false;
+}
+
+function setTrack2Status(mode) {
+  els.track2Record.classList.toggle("active", mode === "recording" || mode === "countin");
+  els.track2Play.classList.toggle("active", mode === "playing");
+  els.track2RecIcon.innerHTML = mode === "recording" || mode === "countin" ? stopIcon : recordIcon;
+  els.track2PlayIcon.innerHTML = mode === "playing" ? stopIcon : playIcon;
+
+  if (mode === "countin") {
+    els.track2Status.textContent = "Cuenta 2 compases";
+    els.track2RecLabel.textContent = "Cancelar";
+    els.track2Play.disabled = true;
+    els.track2Clear.disabled = true;
+    return;
+  }
+
+  if (mode === "recording") {
+    els.track2Status.textContent = "Grabando";
+    els.track2RecLabel.textContent = "Detener";
+    els.track2Play.disabled = true;
+    els.track2Clear.disabled = true;
+    return;
+  }
+
+  if (mode === "playing") {
+    els.track2Status.textContent = "Reproduciendo";
+    els.track2RecLabel.textContent = "Grabar";
+    els.track2PlayLabel.textContent = "Pausa";
+    els.track2Play.disabled = false;
+    els.track2Clear.disabled = false;
+    return;
+  }
+
+  if (state.track2.buffer) {
+    els.track2Status.textContent = `${state.track2.duration.toFixed(1)}s guardados`;
+    els.track2Play.disabled = false;
+    els.track2Clear.disabled = false;
+  } else {
+    els.track2Status.textContent = "Vacia";
+    els.track2Play.disabled = true;
+    els.track2Clear.disabled = true;
+  }
+
+  els.track2RecLabel.textContent = "Grabar";
+  els.track2PlayLabel.textContent = "Play";
 }
 
 function updateVolume() {
@@ -1110,8 +1401,29 @@ function updateBpm() {
 }
 
 els.btnRecord.addEventListener("click", async () => {
+  if (state.countInActive && state.activeTarget === "track2") {
+    stopTrack2Recording();
+    return;
+  }
+
   if (state.isRecording || state.countInActive) stopRecording();
   else await startRecording();
+});
+
+els.track2Record.addEventListener("click", async () => {
+  if (state.track2.isRecording || (state.countInActive && state.activeTarget === "track2")) stopTrack2Recording();
+  else await startTrack2Recording();
+});
+
+els.track2Play.addEventListener("click", async () => {
+  if (!state.track2.buffer) return;
+  await initAudio();
+  if (state.track2.isPlaying) stopTrack2Playback();
+  else startTrack2Playback();
+});
+
+els.track2Clear.addEventListener("click", () => {
+  if (state.track2.buffer && window.confirm("Borrar la pista 2 guardada?")) clearTrack2();
 });
 
 els.btnPlay.addEventListener("click", async () => {
@@ -1152,6 +1464,11 @@ document.addEventListener("keydown", async event => {
 
   if (event.code === "Space") {
     event.preventDefault();
+    if (state.countInActive && state.activeTarget === "track2") {
+      stopTrack2Recording();
+      return;
+    }
+
     if (state.isRecording || state.countInActive) stopRecording();
     else await startRecording();
   }
@@ -1173,6 +1490,7 @@ document.addEventListener("keydown", async event => {
 window.addEventListener("resize", resizeCanvas);
 window.addEventListener("beforeunload", () => {
   stopPlayback();
+  stopTrack2Playback();
   stopMetronome(false);
   cancelCountIn();
   state.mediaStream?.getTracks().forEach(track => track.stop());
@@ -1181,7 +1499,9 @@ window.addEventListener("beforeunload", () => {
 updateVolume();
 updateBpm();
 setStatus("idle");
+setTrack2Status("empty");
 requestAnimationFrame(resizeCanvas);
+loadTrack2();
 </script>
 </body>
 </html>
