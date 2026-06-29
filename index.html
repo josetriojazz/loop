@@ -690,7 +690,7 @@
       <section class="wave-section" aria-label="Forma de onda del loop">
         <div class="wave-head">
           <div class="wave-head-label">
-            <span class="section-label">Loop</span>
+            <input type="text" class="track-name-input" id="loop-name" value="Loop" maxlength="40" aria-label="Nombre del loop">
           </div>
           <span class="hint" id="wave-hint">Prepara tu instrumento y pulsa grabar.</span>
         </div>
@@ -873,6 +873,7 @@ const els = {
   micError:    document.getElementById("mic-error"),
   emptyState:  document.getElementById("empty-state"),
   waveHint:    document.getElementById("wave-hint"),
+  loopName:    document.getElementById("loop-name"),
 };
 
 const tracksEls = {};
@@ -1557,7 +1558,7 @@ async function downloadMP3() {
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement("a");
     a.href = url;
-    a.download = "ayunduo-loop.mp3";
+    a.download = `${(els.loopName.value.trim() || "loop")}.mp3`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 5000);
   } catch (err) {
@@ -1747,6 +1748,10 @@ els.btnClear.addEventListener("click", () => {
 });
 
 els.btnDownload.addEventListener("click", downloadMP3);
+
+els.loopName.addEventListener("change", () => {
+  els.loopName.value = els.loopName.value.trim() || "Loop";
+});
 
 els.volume.addEventListener("input", updateVolume);
 
