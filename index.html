@@ -633,7 +633,96 @@
     margin: 0;
   }
 
-  /* Spinning icon during export */
+  /* ── TRIM HANDLES ── */
+  .wave-wrap,
+  .track-wave-wrap { overflow: visible; } /* allow handles to be visible at edges */
+
+  .trim-handle {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 14px;
+    cursor: ew-resize;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    touch-action: none;
+  }
+
+  .trim-handle::before {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: var(--amber-2);
+    box-shadow: 0 0 8px rgba(240,179,90,.7);
+    border-radius: 1px;
+  }
+
+  .trim-handle::after {
+    content: "⠿";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--amber-2);
+    color: #15100a;
+    font-size: 9px;
+    border-radius: 3px;
+    box-shadow: 0 0 10px rgba(240,179,90,.5);
+  }
+
+  .trim-handle.start { left: 0; transform: translateX(-50%); }
+  .trim-handle.end   { right: 0; transform: translateX(50%); }
+
+  .trim-handle.hidden { display: none; }
+
+  /* dimmed regions outside trim */
+  .trim-shade {
+    position: absolute;
+    top: 0; bottom: 0;
+    background: rgba(0,0,0,.52);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* track handles use blue tint */
+  .track-wave-wrap .trim-handle::before {
+    background: var(--blue);
+    box-shadow: 0 0 8px rgba(147,183,255,.7);
+  }
+  .track-wave-wrap .trim-handle::after {
+    background: var(--blue);
+    color: #06101e;
+    box-shadow: 0 0 10px rgba(147,183,255,.5);
+  }
+
+  /* duration badge shown during drag */
+  .trim-badge {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 3px 7px;
+    background: var(--panel-3);
+    border: 1px solid var(--line-hi);
+    border-radius: var(--radius-sm);
+    color: var(--amber-2);
+    font-family: var(--mono);
+    font-size: 11px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .1s;
+  }
+
+  .trim-badge.visible { opacity: 1; }
+
   @keyframes spin { to { transform: rotate(360deg); } }
   .spinning { animation: spin .8s linear infinite; }
 
@@ -697,6 +786,14 @@
         <div class="wave-wrap">
           <canvas id="waveform"></canvas>
           <div class="empty-state" id="empty-state">El loop aparecera aqui cuando termines la primera toma.</div>
+          <div class="trim-shade" id="loop-shade-start" style="left:0;width:0"></div>
+          <div class="trim-shade" id="loop-shade-end"   style="right:0;width:0"></div>
+          <div class="trim-handle start hidden" id="loop-handle-start">
+            <div class="trim-badge" id="loop-badge-start"></div>
+          </div>
+          <div class="trim-handle end hidden" id="loop-handle-end">
+            <div class="trim-badge" id="loop-badge-end"></div>
+          </div>
         </div>
         <div class="timeline" aria-hidden="true">
           <div id="playhead"></div>
@@ -751,6 +848,14 @@
           <div class="track-wave-wrap">
             <canvas id="track2-canvas"></canvas>
             <div class="track-wave-empty" id="track2-wave-empty">Sin grabacion</div>
+            <div class="trim-shade" id="track2-shade-start" style="left:0;width:0"></div>
+            <div class="trim-shade" id="track2-shade-end"   style="right:0;width:0"></div>
+            <div class="trim-handle start hidden" id="track2-handle-start">
+              <div class="trim-badge" id="track2-badge-start"></div>
+            </div>
+            <div class="trim-handle end hidden" id="track2-handle-end">
+              <div class="trim-badge" id="track2-badge-end"></div>
+            </div>
           </div>
         </div>
       </section>
@@ -1051,6 +1156,9 @@ async function handleRecordingStop() {
   els.btnDownload.disabled = false;
   buildWaveformData();
   drawWaveform();
+  // reset trim and show handles
+  state.loopTrim.startRatio = 0; state.loopTrim.endRatio = 1; state.loopTrim.originalBuffer = null;
+  showTrimHandles("loop");
   setStatus("ready");
   startPlayback();
 }
@@ -1135,6 +1243,9 @@ async function handleTrackStop(id) {
   track.dataUrl = await blobToDataUrl(blob);
   buildTrackWaveformData(id);
   drawTrackWaveform(id);
+  // reset trim and show handles
+  track.trim.startRatio = 0; track.trim.endRatio = 1; track.trim.originalBuffer = null;
+  showTrimHandles(id);
   saveTrack(id);
   setTrackStatus(id, "ready");
 }
@@ -1171,6 +1282,9 @@ function clearTrack(id) {
   stopTrackPlayback(id);
   track.buffer = null; track.chunks = []; track.dataUrl = "";
   track.duration = 0; track.waveformData = [];
+  track.trim.startRatio = 0; track.trim.endRatio = 1; track.trim.originalBuffer = null;
+  hideTrimHandles(id);
+  updateTrimUI(id);
   localStorage.removeItem(storageKey(id));
   drawTrackWaveform(id);
   setTrackStatus(id, "empty");
@@ -1209,6 +1323,9 @@ function clearLoop() {
   els.btnPlay.disabled = true;
   els.btnClear.disabled = true;
   els.btnDownload.disabled = true;
+  hideTrimHandles("loop");
+  state.loopTrim.startRatio = 0; state.loopTrim.endRatio = 1; state.loopTrim.originalBuffer = null;
+  updateTrimUI("loop");
   drawWaveform();
   setStatus("idle");
 }
@@ -1358,6 +1475,203 @@ function startTrackLiveWaveform(id) {
   }
   tick();
 }
+
+/* ─── TRIM SYSTEM ─── */
+
+// trim state: { startRatio: 0..1, endRatio: 0..1, originalBuffer, dragging: null }
+state.loopTrim = { startRatio: 0, endRatio: 1, originalBuffer: null };
+state.tracks.track2.trim = { startRatio: 0, endRatio: 1, originalBuffer: null };
+
+function showTrimHandles(which) {
+  if (which === "loop") {
+    document.getElementById("loop-handle-start").classList.remove("hidden");
+    document.getElementById("loop-handle-end").classList.remove("hidden");
+    updateTrimUI("loop");
+  } else {
+    document.getElementById(`${which}-handle-start`).classList.remove("hidden");
+    document.getElementById(`${which}-handle-end`).classList.remove("hidden");
+    updateTrimUI(which);
+  }
+}
+
+function hideTrimHandles(which) {
+  ["start","end"].forEach(side => {
+    const el = document.getElementById(`${which}-handle-${side}`);
+    if (el) el.classList.add("hidden");
+  });
+  updateTrimUI(which);
+}
+
+function updateTrimUI(which) {
+  const trim = which === "loop" ? state.loopTrim : state.tracks[which].trim;
+  const wrap = which === "loop"
+    ? els.canvas.parentElement
+    : tracksEls[which].canvas.parentElement;
+  const ww = wrap.clientWidth;
+
+  const sx = trim.startRatio * ww;
+  const ex = trim.endRatio   * ww;
+
+  // shading
+  const shadeStart = document.getElementById(`${which}-shade-start`);
+  const shadeEnd   = document.getElementById(`${which}-shade-end`);
+  if (shadeStart) { shadeStart.style.left = "0"; shadeStart.style.width = sx + "px"; }
+  if (shadeEnd)   { shadeEnd.style.right  = "0"; shadeEnd.style.width  = (ww - ex) + "px"; }
+
+  // handle positions
+  const hs = document.getElementById(`${which}-handle-start`);
+  const he = document.getElementById(`${which}-handle-end`);
+  if (hs) hs.style.left = sx + "px";
+  if (he) he.style.left = ex + "px";
+}
+
+function makeDuration(buf, trim) {
+  if (!buf) return "0.0s";
+  return ((trim.endRatio - trim.startRatio) * buf.duration).toFixed(2) + "s";
+}
+
+function initTrimDrag(which) {
+  const isLoop = which === "loop";
+  const wrap   = isLoop ? els.canvas.parentElement : tracksEls[which].canvas.parentElement;
+
+  ["start","end"].forEach(side => {
+    const handle = document.getElementById(`${which}-handle-${side}`);
+    const badge  = document.getElementById(`${which}-badge-${side}`);
+    if (!handle) return;
+
+    let dragging = false;
+
+    function onDown(e) {
+      const buf = isLoop ? state.loopTrim.originalBuffer || state.loopBuffer
+                         : state.tracks[which].trim.originalBuffer || state.tracks[which].buffer;
+      if (!buf) return;
+      e.preventDefault();
+      dragging = true;
+      badge.classList.add("visible");
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup",   onUp);
+      document.addEventListener("touchmove", onMove, { passive: false });
+      document.addEventListener("touchend",  onUp);
+    }
+
+    function onMove(e) {
+      if (!dragging) return;
+      e.preventDefault();
+      const rect = wrap.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      let ratio = (clientX - rect.left) / rect.width;
+      ratio = Math.max(0, Math.min(1, ratio));
+
+      const trim = isLoop ? state.loopTrim : state.tracks[which].trim;
+      const MIN_GAP = 0.02;
+
+      if (side === "start") {
+        trim.startRatio = Math.min(ratio, trim.endRatio - MIN_GAP);
+      } else {
+        trim.endRatio = Math.max(ratio, trim.startRatio + MIN_GAP);
+      }
+
+      const buf = isLoop ? (state.loopTrim.originalBuffer || state.loopBuffer)
+                         : (state.tracks[which].trim.originalBuffer || state.tracks[which].buffer);
+      badge.textContent = makeDuration(buf, trim);
+      updateTrimUI(which);
+
+      // redraw waveform to show trim preview
+      if (isLoop) drawWaveform();
+      else drawTrackWaveform(which);
+    }
+
+    function onUp() {
+      if (!dragging) return;
+      dragging = false;
+      badge.classList.remove("visible");
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup",   onUp);
+      document.removeEventListener("touchmove", onMove);
+      document.removeEventListener("touchend",  onUp);
+
+      // apply trim — slice the original buffer
+      applyTrim(which);
+    }
+
+    handle.addEventListener("mousedown",  onDown);
+    handle.addEventListener("touchstart", onDown, { passive: false });
+  });
+}
+
+function applyTrim(which) {
+  const isLoop = which === "loop";
+  const trim   = isLoop ? state.loopTrim : state.tracks[which].trim;
+  const orig   = isLoop
+    ? (trim.originalBuffer || state.loopBuffer)
+    : (trim.originalBuffer || state.tracks[which].buffer);
+  if (!orig) return;
+
+  // Save original once
+  if (!trim.originalBuffer) trim.originalBuffer = orig;
+
+  const sampleRate   = orig.sampleRate;
+  const numChannels  = orig.numberOfChannels;
+  const totalSamples = orig.length;
+  const startSample  = Math.floor(trim.startRatio * totalSamples);
+  const endSample    = Math.floor(trim.endRatio   * totalSamples);
+  const newLength    = Math.max(1, endSample - startSample);
+
+  const newBuf = state.audioCtx.createBuffer(numChannels, newLength, sampleRate);
+  for (let ch = 0; ch < numChannels; ch++) {
+    const src = orig.getChannelData(ch);
+    const dst = newBuf.getChannelData(ch);
+    for (let i = 0; i < newLength; i++) dst[i] = src[startSample + i];
+  }
+
+  if (isLoop) {
+    const wasPlaying = state.isPlaying;
+    if (wasPlaying) stopPlayback();
+    state.loopBuffer   = newBuf;
+    state.loopDuration = newBuf.duration;
+    els.durationVal.textContent = newBuf.duration.toFixed(1);
+    buildWaveformData();
+    drawWaveform();
+    updateTrimUI("loop");
+    if (wasPlaying) startPlayback();
+  } else {
+    const wasPlaying = state.tracks[which].isPlaying;
+    if (wasPlaying) stopTrackPlayback(which);
+    state.tracks[which].buffer   = newBuf;
+    state.tracks[which].duration = newBuf.duration;
+    buildTrackWaveformData(which);
+    drawTrackWaveform(which);
+    updateTrimUI(which);
+    setTrackStatus(which, "ready");
+  }
+}
+
+function resetTrim(which) {
+  const trim = which === "loop" ? state.loopTrim : state.tracks[which].trim;
+  trim.startRatio = 0;
+  trim.endRatio   = 1;
+  // restore original if any
+  if (trim.originalBuffer) {
+    if (which === "loop") {
+      state.loopBuffer   = trim.originalBuffer;
+      state.loopDuration = trim.originalBuffer.duration;
+      els.durationVal.textContent = state.loopDuration.toFixed(1);
+      buildWaveformData();
+      drawWaveform();
+    } else {
+      state.tracks[which].buffer   = trim.originalBuffer;
+      state.tracks[which].duration = trim.originalBuffer.duration;
+      buildTrackWaveformData(which);
+      drawTrackWaveform(which);
+    }
+    trim.originalBuffer = null;
+  }
+  updateTrimUI(which);
+}
+
+// Init drag listeners once
+initTrimDrag("loop");
+initTrimDrag("track2");
 
 /* ─── COUNT-IN ─── */
 function startCountIn(onComplete) {
@@ -1673,6 +1987,8 @@ async function loadTrack(id) {
     tracksEls[id].nameInput.value = track.name;
     buildTrackWaveformData(id);
     drawTrackWaveform(id);
+    track.trim.startRatio = 0; track.trim.endRatio = 1; track.trim.originalBuffer = null;
+    showTrimHandles(id);
     setTrackStatus(id, "ready");
   } catch {
     localStorage.removeItem(key);
@@ -1809,7 +2125,11 @@ document.addEventListener("keydown", async ev => {
   }
 });
 
-window.addEventListener("resize", resizeCanvas);
+window.addEventListener("resize", () => {
+  resizeCanvas();
+  updateTrimUI("loop");
+  trackIds.forEach(id => updateTrimUI(id));
+});
 window.addEventListener("beforeunload", () => {
   stopPlayback();
   trackIds.forEach(id => stopTrackPlayback(id));
